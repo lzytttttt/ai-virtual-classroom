@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 180" width="120" height="180">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="2" stdDeviation="4" flood-opacity="0.2" flood-color="#3D3D3D"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Body (stylish sweater) -->
+    <rect x="30" y="80" width="60" height="80" rx="10" ry="10" fill="#FF6B6B" stroke="#3D3D3D" stroke-width="3"/>
+    <!-- Turtleneck collar -->
+    <rect x="44" y="72" width="32" height="14" rx="6" ry="6" fill="#FF6B6B" stroke="#3D3D3D" stroke-width="2"/>
+    <!-- Arms (one holding paintbrush) -->
+    <rect x="18" y="85" width="14" height="42" rx="7" ry="7" fill="#FF6B6B" stroke="#3D3D3D" stroke-width="3"/>
+    <rect x="88" y="85" width="14" height="42" rx="7" ry="7" fill="#FF6B6B" stroke="#3D3D3D" stroke-width="3"/>
+    <!-- Paintbrush in right hand -->
+    <line x1="100" y1="120" x2="108" y2="100" stroke="#A0784C" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="109" cy="96" rx="4" ry="8" fill="#54A0FF" transform="rotate(15, 109, 96)"/>
+    <!-- Legs -->
+    <rect x="38" y="155" width="16" height="20" rx="4" ry="4" fill="#3D3D3D"/>
+    <rect x="66" y="155" width="16" height="20" rx="4" ry="4" fill="#3D3D3D"/>
+    <!-- Shoes (ballet flats) -->
+    <ellipse cx="46" cy="172" rx="13" ry="5" fill="#3D3D3D"/>
+    <ellipse cx="74" cy="172" rx="13" ry="5" fill="#3D3D3D"/>
+    <!-- Head -->
+    <circle cx="60" cy="48" r="35" fill="#FFD9A0" stroke="#3D3D3D" stroke-width="3"/>
+    <!-- Hair (long, wavy) -->
+    <path d="M25,45 Q25,12 60,10 Q95,12 95,45 L92,60 Q90,35 70,20 Q60,16 50,20 Q30,35 28,60 Z" fill="#3D3D3D"/>
+    <path d="M28,60 Q26,75 30,85" fill="none" stroke="#3D3D3D" stroke-width="5" stroke-linecap="round"/>
+    <path d="M92,60 Q94,75 90,85" fill="none" stroke="#3D3D3D" stroke-width="5" stroke-linecap="round"/>
+    <!-- Beret -->
+    <ellipse cx="62" cy="18" rx="30" ry="12" fill="#FF6B6B" stroke="#3D3D3D" stroke-width="2.5"/>
+    <circle cx="62" cy="8" r="4" fill="#FF6B6B" stroke="#3D3D3D" stroke-width="2"/>
+    <!-- Eyes (dreamy, artistic) -->
+    <circle cx="47" cy="48" r="4" fill="#3D3D3D"/>
+    <circle cx="73" cy="48" r="4" fill="#3D3D3D"/>
+    <circle cx="48" cy="46" r="2" fill="#FFFFFF"/>
+    <circle cx="74" cy="46" r="2" fill="#FFFFFF"/>
+    <!-- Eyelashes -->
+    <line x1="42" y1="43" x2="40" y2="40" stroke="#3D3D3D" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="52" y1="43" x2="54" y2="40" stroke="#3D3D3D" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="68" y1="43" x2="66" y2="40" stroke="#3D3D3D" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="78" y1="43" x2="80" y2="40" stroke="#3D3D3D" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Gentle smile -->
+    <path d="M52,60 Q60,66 68,60" fill="none" stroke="#3D3D3D" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Blush -->
+    <ellipse cx="40" cy="56" rx="5" ry="3" fill="#FF6B6B" opacity="0.35"/>
+    <ellipse cx="80" cy="56" rx="5" ry="3" fill="#FF6B6B" opacity="0.35"/>
+    <!-- Musical note accent -->
+    <g transform="translate(98, 28)" opacity="0.6">
+      <circle cx="0" cy="0" r="3" fill="#FF9F43"/>
+      <line x1="3" y1="0" x2="3" y2="-12" stroke="#FF9F43" stroke-width="1.5"/>
+      <path d="M3,-12 Q8,-14 6,-10" fill="#FF9F43"/>
+    </g>
+  </g>
+</svg>

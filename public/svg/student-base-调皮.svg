@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 180" width="120" height="180">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="2" stdDeviation="4" flood-opacity="0.2" flood-color="#3D3D3D"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Body -->
+    <rect x="30" y="80" width="60" height="80" rx="10" ry="10" fill="#FF9F43" stroke="#3D3D3D" stroke-width="3"/>
+    <!-- Arms (one raised, playful) -->
+    <rect x="18" y="82" width="14" height="45" rx="7" ry="7" fill="#FF9F43" stroke="#3D3D3D" stroke-width="3" transform="rotate(-15, 25, 82)"/>
+    <rect x="88" y="78" width="14" height="45" rx="7" ry="7" fill="#FF9F43" stroke="#3D3D3D" stroke-width="3" transform="rotate(20, 95, 78)"/>
+    <!-- Waving hand -->
+    <ellipse cx="105" cy="72" rx="7" ry="6" fill="#FFD9A0" stroke="#3D3D3D" stroke-width="2" transform="rotate(20, 105, 72)"/>
+    <!-- Legs -->
+    <rect x="38" y="155" width="16" height="20" rx="4" ry="4" fill="#3D3D3D"/>
+    <rect x="66" y="155" width="16" height="20" rx="4" ry="4" fill="#3D3D3D"/>
+    <!-- Shoes -->
+    <rect x="35" y="168" width="22" height="8" rx="4" ry="4" fill="#3D3D3D"/>
+    <rect x="63" y="168" width="22" height="8" rx="4" ry="4" fill="#3D3D3D"/>
+    <!-- Head -->
+    <circle cx="60" cy="48" r="35" fill="#FFD9A0" stroke="#3D3D3D" stroke-width="3"/>
+    <!-- Messy hair -->
+    <path d="M25,40 Q22,10 50,8 L55,18 Q45,12 38,22 L42,16 Q38,8 55,6 L58,15 Q52,5 65,4 L62,14 Q60,2 72,5 L68,15 Q70,6 82,12 L76,20 Q82,10 90,22 L85,30 Q92,15 95,40 L90,35 Q88,20 70,14 Q60,12 50,14 Q32,20 30,35 Z" fill="#3D3D3D"/>
+    <!-- Hair tuft sticking up -->
+    <path d="M70,6 Q72,-5 78,0 Q75,4 76,8" fill="#3D3D3D" stroke="#3D3D3D" stroke-width="1"/>
+    <!-- Eyes (mischievous, one squinting) -->
+    <circle cx="47" cy="48" r="4" fill="#3D3D3D"/>
+    <circle cx="48" cy="47" r="1.5" fill="#FFFFFF"/>
+    <path d="M64,46 Q73,42 80,46" fill="none" stroke="#3D3D3D" stroke-width="3" stroke-linecap="round"/>
+    <!-- Mischievous grin -->
+    <path d="M45,60 Q52,72 60,68 Q68,72 75,60" fill="none" stroke="#3D3D3D" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Tooth -->
+    <rect x="56" y="63" width="6" height="7" rx="1.5" ry="1.5" fill="#FFFFFF" stroke="#3D3D3D" stroke-width="1"/>
+    <!-- Blush -->
+    <ellipse cx="38" cy="55" rx="5" ry="3" fill="#FF6B6B" opacity="0.3"/>
+    <ellipse cx="82" cy="55" rx="5" ry="3" fill="#FF6B6B" opacity="0.3"/>
+  </g>
+</svg>

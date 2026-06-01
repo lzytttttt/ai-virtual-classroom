@@ -1,0 +1,58 @@
+import type { StudentSlice } from '../store/types';
+
+export const initialStudents: StudentSlice[] = [
+  {
+    id: 'student-1',
+    name: '小明',
+    personality: '学霸',
+    state: 'normal',
+    stateSource: 'idle',
+    teacherCooldownUntil: 0,
+    seatPosition: { row: 0, col: 0 },
+  },
+  {
+    id: 'student-2',
+    name: '小红',
+    personality: '内向',
+    state: 'normal',
+    stateSource: 'idle',
+    teacherCooldownUntil: 0,
+    seatPosition: { row: 0, col: 1 },
+  },
+  {
+    id: 'student-3',
+    name: '小刚',
+    personality: '调皮',
+    state: 'normal',
+    stateSource: 'idle',
+    teacherCooldownUntil: 0,
+    seatPosition: { row: 0, col: 2 },
+  },
+  {
+    id: 'student-4',
+    name: '小丽',
+    personality: '努力',
+    state: 'normal',
+    stateSource: 'idle',
+    teacherCooldownUntil: 0,
+    seatPosition: { row: 1, col: 0 },
+  },
+  {
+    id: 'student-5',
+    name: '小雪',
+    personality: '文艺',
+    state: 'normal',
+    stateSource: 'idle',
+    teacherCooldownUntil: 0,
+    seatPosition: { row: 1, col: 1 },
+  },
+  {
+    id: 'student-6',
+    name: '小强',
+    personality: '体育',
+    state: 'normal',
+    stateSource: 'idle',
+    teacherCooldownUntil: 0,
+    seatPosition: { row: 1, col: 2 },
+  },
+];
