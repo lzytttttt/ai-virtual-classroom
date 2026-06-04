@@ -1,208 +1,117 @@
 /* === State Transition Animations === */
+.state-transition { transition: all 0.3s ease; }
 
-/* Base transition for all state changes */
-.state-transition {
-  transition: all 0.3s ease;
-}
-
-/* === Hand Raised State === */
+/* === Hand Raised === */
 @keyframes handWave {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(12deg); }
-  75% { transform: rotate(-12deg); }
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
 }
-
 .state-hand-raised .hand-arm {
-  transform-origin: bottom center;
+  transform-origin: 50% 100%;
   animation: handWave 0.8s ease-in-out infinite;
 }
-
 .state-hand-raised .character-body {
-  transform: rotate(-3deg);
-  transform-origin: bottom center;
+  animation: none;
 }
 
-/* === Answering State === */
+/* === Answering === */
 @keyframes mouthOpen {
   0%, 100% { transform: scaleY(1); }
   50% { transform: scaleY(1.3); }
 }
-
 .state-answering .mouth {
-  animation: mouthOpen 0.6s ease-in-out infinite;
-  transform-origin: center;
+  animation: mouthOpen 0.5s ease-in-out infinite;
 }
 
-/* === Collective Reading State === */
+/* === Collective Reading === */
 @keyframes readingPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
-
 .state-reading .reading-indicator {
   animation: readingPulse 1.2s ease-in-out infinite;
 }
-
 .state-reading .mouth {
-  animation: mouthOpen 1s ease-in-out infinite;
-  transform-origin: center;
+  animation: mouthOpen 0.8s ease-in-out infinite;
 }
 
-/* === Distracted State === */
+/* === Distracted === */
 @keyframes headTurn {
   0%, 100% { transform: rotate(0deg); }
-  30% { transform: rotate(15deg); }
-  70% { transform: rotate(15deg); }
+  50% { transform: rotate(15deg); }
 }
-
 .state-distracted .character-head {
   animation: headTurn 3s ease-in-out infinite;
-  transform-origin: center bottom;
 }
-
 @keyframes thoughtFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(-5px); opacity: 1; }
 }
-
 .state-distracted .thought-bubble {
   animation: thoughtFloat 2s ease-in-out infinite;
 }
 
-/* === Sleeping State === */
+/* === Sleeping === */
 @keyframes zzzBob {
-  0% {
-    transform: translate(0, 0) scale(0.6);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(12px, -20px) scale(1);
-    opacity: 0;
-  }
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(10px, -20px) scale(1); }
 }
-
-.state-sleeping .zzz-1 {
-  animation: zzzBob 2s ease-out infinite;
-}
-
-.state-sleeping .zzz-2 {
-  animation: zzzBob 2s ease-out 0.5s infinite;
-}
-
-.state-sleeping .zzz-3 {
-  animation: zzzBob 2s ease-out 1s infinite;
-}
-
+.state-sleeping .zzz-1 { animation: zzzBob 2s ease-out infinite; }
+.state-sleeping .zzz-2 { animation: zzzBob 2s ease-out 0.5s infinite; }
+.state-sleeping .zzz-3 { animation: zzzBob 2s ease-out 1s infinite; }
 @keyframes headNod {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(8deg); }
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(3px); }
 }
-
 .state-sleeping .character-head {
-  animation: headNod 3s ease-in-out infinite;
-  transform-origin: center bottom;
+  animation: headNod 2s ease-in-out infinite;
 }
+.state-sleeping .eyes { transform: scaleY(0.1); }
 
-.state-sleeping .eyes {
-  transform: scaleY(0.1);
-}
-
-/* === Speech Bubble Animations === */
+/* === Speech Bubble === */
 @keyframes bubbleAppear {
-  0% {
-    transform: scale(0) translateY(10px);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.1) translateY(-2px);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
+  from { opacity: 0; transform: scale(0.8) translateY(5px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
-
-.speech-bubble {
-  animation: bubbleAppear 0.3s ease-out forwards;
-}
+.speech-bubble { animation: bubbleAppear 0.3s ease-out forwards; }
 
 @keyframes thoughtBubbleAppear {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 0.85; transform: scale(1); }
 }
+.thought-bubble { animation: thoughtBubbleAppear 0.4s ease-out forwards; }
 
-.thought-bubble {
-  animation: thoughtBubbleAppear 0.4s ease-out forwards;
-}
-
-/* === Ambient Idle Animations === */
-
+/* === Idle === */
 @keyframes idleBreathe {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); }
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.015); }
 }
-
-.state-normal .character-body {
-  animation: idleBreathe 3s ease-in-out infinite;
-}
+.state-normal .character-body { animation: idleBreathe 3s ease-in-out infinite; }
 
 @keyframes idleSway {
   0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(1deg); }
-  75% { transform: rotate(-1deg); }
+  50% { transform: rotate(0.5deg); }
 }
+.student-sprite.state-normal { animation: idleSway 4s ease-in-out infinite; }
 
-.student-sprite.state-normal {
-  animation: idleSway 4s ease-in-out infinite;
-}
-
-/* === Chalk Writing Effect (Blackboard) === */
+/* === Chalk Text === */
 @keyframes chalkWrite {
-  0% { stroke-dashoffset: 200; opacity: 0.3; }
-  20% { opacity: 1; }
-  100% { stroke-dashoffset: 0; opacity: 1; }
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
 }
+.chalk-text { animation: chalkWrite 0.6s ease-out forwards; }
 
-.chalk-text {
-  stroke-dasharray: 200;
-  animation: chalkWrite 2s ease-out forwards;
-}
-
-/* === Window Light Shimmer === */
+/* === Window Light === */
 @keyframes windowShimmer {
-  0%, 100% { opacity: 0.08; }
-  50% { opacity: 0.14; }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
 }
+.window-light { animation: windowShimmer 6s ease-in-out infinite; }
 
-.window-light {
-  animation: windowShimmer 6s ease-in-out infinite;
-}
-
-/* === Clock Tick === */
+/* === Clock === */
 @keyframes clockTick {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(6deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(6deg); }
 }
-
-.clock-second-hand {
-  transform-origin: center;
-  animation: clockTick 1s steps(1) infinite;
-}
-
-/* === Title Shimmer === */
-@keyframes shimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
+.clock-second-hand { animation: clockTick 1s steps(6) infinite; }

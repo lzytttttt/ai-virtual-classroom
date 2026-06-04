@@ -2,6 +2,7 @@ import React from 'react';
 import type { StudentSlice } from '../../store/types';
 import { StateOverlay } from './StateOverlay';
 import { SpeechBubble, type BubbleMode } from './SpeechBubble';
+import { StudentStatusBadge } from './StudentStatusBadge';
 
 const PERSONALITY_SVG_MAP: Record<string, string> = {
   '学霸': '/svg/student-base-学霸.svg',
@@ -22,30 +23,48 @@ function getSeatWorldPos(row: number, col: number): { x: number; y: number } {
 
 interface StudentSpriteProps {
   student: StudentSlice;
-  /** Optional speech/thought text to display */
   bubbleText?: string;
-  /** Bubble display mode */
   bubbleMode?: BubbleMode;
+  isSelected?: boolean;
+  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseLeave?: () => void;
 }
 
 export const StudentSprite: React.FC<StudentSpriteProps> = ({
   student,
   bubbleText,
   bubbleMode = 'individual',
+  isSelected = false,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   const { personality, state, seatPosition } = student;
   const svgSrc = PERSONALITY_SVG_MAP[personality];
   const seatPos = getSeatWorldPos(seatPosition.row, seatPosition.col);
 
-  // Character is positioned so feet are near the desk
-  // SVG viewBox is 120x180, scale down to fit ~60px width in scene
   const charWidth = 60;
   const charHeight = 90;
   const charX = seatPos.x - charWidth / 2;
   const charY = seatPos.y - charHeight - 10;
 
   return (
-    <g className={`student-sprite state-${state}`}>
+    <g
+      className={`student-sprite state-${state}${isSelected ? ' student-sprite--selected' : ''}`}
+      style={{ cursor: 'pointer' }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {/* Selection highlight ring */}
+      {isSelected && (
+        <ellipse
+          cx={seatPos.x}
+          cy={seatPos.y - 10}
+          rx={45}
+          ry={20}
+          className="student-selected-glow"
+        />
+      )}
+
       {/* Character base (SVG image) */}
       <image
         href={svgSrc}
@@ -56,14 +75,19 @@ export const StudentSprite: React.FC<StudentSpriteProps> = ({
         preserveAspectRatio="xMidYMid meet"
       />
 
-      {/* State overlay positioned relative to character */}
+      {/* State overlay */}
       <g transform={`translate(${charX}, ${charY}) scale(${charWidth / 120}, ${charHeight / 180})`}>
         <StateOverlay state={state} />
       </g>
 
-      {/* Speech bubble above character */}
+      {/* Status badge above character */}
+      <g transform={`translate(${seatPos.x}, ${charY - 8})`}>
+        <StudentStatusBadge state={state} name={student.name} />
+      </g>
+
+      {/* Speech bubble */}
       {bubbleText && (
-        <g transform={`translate(${seatPos.x}, ${charY - 5})`}>
+        <g transform={`translate(${seatPos.x}, ${charY - 20})`}>
           <SpeechBubble text={bubbleText} mode={bubbleMode} />
         </g>
       )}

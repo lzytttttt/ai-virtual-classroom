@@ -1,128 +1,154 @@
 import { create } from 'zustand';
-import type { StudentSlice, StudentState, StateSource, LessonPhase, TeacherAction, ScriptNode } from './types';
+import type {
+  StudentSlice, StudentState, StateSource, LessonPhase,
+  ScriptNode, ActiveInteraction, InteractionMode,
+  ActivityLogEntry,
+} from './types';
 import { initialStudents } from '../data/students';
 
-interface ActiveInteraction {
-  type: TeacherAction;
-  targetStudentId?: string;
-  prompt: string;
-  startedAt: number;
-}
-
-interface ClassroomState {
+export interface ClassroomState {
   students: StudentSlice[];
   lessonPhase: LessonPhase;
   scriptPosition: number;
   scriptNodes: ScriptNode[];
-  activeInteraction: ActiveInteraction | null;
   isPaused: boolean;
   elapsedMs: number;
   playbackSpeed: number;
+  interaction: ActiveInteraction | null;
+  activityLog: ActivityLogEntry[];
+  showReport: boolean;
 
   setStudents: (students: StudentSlice[]) => void;
   updateStudentState: (id: string, state: StudentState, source: StateSource) => void;
   setLessonPhase: (phase: LessonPhase) => void;
   setScriptPosition: (pos: number) => void;
   setScriptNodes: (nodes: ScriptNode[]) => void;
-  setActiveInteraction: (interaction: ActiveInteraction | null) => void;
-  dispatchTeacherAction: (action: TeacherAction, targetStudentId?: string) => void;
   setPaused: (paused: boolean) => void;
   setElapsedMs: (ms: number) => void;
   setPlaybackSpeed: (speed: number) => void;
+  setInteraction: (interaction: ActiveInteraction | null) => void;
+  setShowReport: (show: boolean) => void;
+  beginInteraction: (mode: InteractionMode, opts?: Partial<ActiveInteraction>) => void;
+  resolveInteraction: (feedbackText: string, canContinue: boolean) => void;
+  clearInteraction: () => void;
+  addActivityLog: (entry: ActivityLogEntry) => void;
   reconcileScriptState: (upToTimestamp: number) => void;
 }
+
+const COOLDOWN_MS = 8000;
 
 export const useClassroomStore = create<ClassroomState>((set, get) => ({
   students: initialStudents,
   lessonPhase: 'intro',
   scriptPosition: 0,
   scriptNodes: [],
-  activeInteraction: null,
   isPaused: false,
   elapsedMs: 0,
   playbackSpeed: 1,
+  interaction: null,
+  activityLog: [],
+  showReport: false,
 
   setStudents: (students) => set({ students }),
 
   updateStudentState: (id, state, source) =>
     set((s) => ({
       students: s.students.map((st) =>
-        st.id === id ? { ...st, state, stateSource: source } : st
+        st.id === id
+          ? {
+              ...st,
+              state,
+              stateSource: source,
+              teacherCooldownUntil: source === 'teacher' ? Date.now() + COOLDOWN_MS : st.teacherCooldownUntil,
+            }
+          : st,
       ),
     })),
 
   setLessonPhase: (lessonPhase) => set({ lessonPhase }),
-
   setScriptPosition: (scriptPosition) => set({ scriptPosition }),
-
   setScriptNodes: (scriptNodes) => set({ scriptNodes }),
-
-  setActiveInteraction: (activeInteraction) => set({ activeInteraction }),
-
-  dispatchTeacherAction: (action, targetStudentId) => {
-    const now = Date.now();
-    const cooldownMs = 5000;
-
-    if (action === 'call-on' && targetStudentId) {
-      set((s) => ({
-        students: s.students.map((st) =>
-          st.id === targetStudentId
-            ? { ...st, state: 'hand-raised' as StudentState, stateSource: 'teacher' as StateSource, teacherCooldownUntil: now + cooldownMs }
-            : st
-        ),
-        activeInteraction: { type: action, targetStudentId, prompt: '请回答问题', startedAt: now },
-      }));
-    } else if (action === 'ask-question') {
-      set({
-        activeInteraction: { type: action, prompt: '请思考这个问题', startedAt: now },
-      });
-    } else if (action === 'discipline' && targetStudentId) {
-      set((s) => ({
-        students: s.students.map((st) =>
-          st.id === targetStudentId
-            ? { ...st, state: 'normal' as StudentState, stateSource: 'teacher' as StateSource, teacherCooldownUntil: now + cooldownMs }
-            : st
-        ),
-        activeInteraction: { type: action, targetStudentId, prompt: '请认真听讲', startedAt: now },
-      }));
-    } else if (action === 'group-discussion') {
-      set({
-        activeInteraction: { type: action, prompt: '小组讨论开始', startedAt: now },
-      });
-    }
-  },
-
   setPaused: (isPaused) => set({ isPaused }),
   setElapsedMs: (elapsedMs) => set({ elapsedMs }),
   setPlaybackSpeed: (playbackSpeed) => set({ playbackSpeed }),
+  setInteraction: (interaction) => set({ interaction }),
+  setShowReport: (showReport) => set({ showReport }),
+
+  beginInteraction: (mode, opts) => {
+    set({
+      interaction: {
+        mode,
+        actionType: opts?.actionType ?? null,
+        prompt: opts?.prompt ?? '',
+        targetStudentId: opts?.targetStudentId ?? null,
+        candidateStudentIds: opts?.candidateStudentIds ?? [],
+        feedbackText: null,
+        startedAt: Date.now(),
+        resolvedAt: null,
+        canContinue: false,
+        source: opts?.source ?? 'teacher',
+      },
+    });
+  },
+
+  resolveInteraction: (feedbackText, canContinue) => {
+    set((s) => ({
+      interaction: s.interaction
+        ? {
+            ...s.interaction,
+            mode: 'feedback' as InteractionMode,
+            feedbackText,
+            resolvedAt: Date.now(),
+            canContinue,
+          }
+        : null,
+    }));
+  },
+
+  clearInteraction: () => set({ interaction: null }),
+
+  addActivityLog: (entry) => set((s) => ({ activityLog: [...s.activityLog, entry] })),
 
   reconcileScriptState: (upToTimestamp) => {
-    const { scriptNodes, students } = get();
-    const newStudents = students.map((s) => ({ ...s }));
-    let lessonPhase: LessonPhase = 'intro';
+    const { scriptNodes, students, lessonPhase: currentPhase } = get();
+    const now = Date.now();
+    let changed = false;
+    let lessonPhase: LessonPhase = currentPhase;
+
+    let newStudents: StudentSlice[] | null = null;
 
     for (const node of scriptNodes) {
       if (node.timestamp > upToTimestamp) break;
 
       switch (node.type) {
         case 'stateChange': {
-          const idx = newStudents.findIndex((s) => s.id === node.studentId);
+          const idx = students.findIndex((s) => s.id === node.studentId);
           if (idx !== -1) {
-            // State authority check: skip if teacher has taken control
-            if (newStudents[idx].stateSource === 'teacher') break;
-            newStudents[idx].state = node.state;
-            newStudents[idx].stateSource = 'script';
+            if (students[idx].stateSource === 'teacher' && students[idx].teacherCooldownUntil > now) break;
+            if (students[idx].state !== node.state || students[idx].stateSource !== 'script') {
+              if (!newStudents) newStudents = students.map((st) => ({ ...st }));
+              newStudents[idx].state = node.state;
+              newStudents[idx].stateSource = 'script';
+              changed = true;
+            }
           }
           break;
         }
         case 'phaseTransition':
-          lessonPhase = node.phase;
+          if (node.phase !== lessonPhase) {
+            lessonPhase = node.phase;
+            changed = true;
+          }
           break;
         case 'collectiveReading':
-          for (const s of newStudents) {
-            if (s.stateSource === 'teacher') continue;
-            s.state = 'collective-reading';
-            s.stateSource = 'script';
+          for (let i = 0; i < students.length; i++) {
+            if (students[i].stateSource === 'teacher' && students[i].teacherCooldownUntil > now) continue;
+            if (students[i].state !== 'collective-reading' || students[i].stateSource !== 'script') {
+              if (!newStudents) newStudents = students.map((st) => ({ ...st }));
+              newStudents[i].state = 'collective-reading';
+              newStudents[i].stateSource = 'script';
+              changed = true;
+            }
           }
           break;
         default:
@@ -130,6 +156,10 @@ export const useClassroomStore = create<ClassroomState>((set, get) => ({
       }
     }
 
-    set({ students: newStudents, lessonPhase });
+    if (changed) {
+      const update: Partial<ClassroomState> = { lessonPhase };
+      if (newStudents) update.students = newStudents;
+      set(update);
+    }
   },
 }));

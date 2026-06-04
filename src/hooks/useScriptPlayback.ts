@@ -1,98 +1,86 @@
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 import { useClassroomStore } from '../store/classroomStore';
+import { selectTotalDuration } from '../store/selectors';
+import type { ScriptNode } from '../store/types';
 
 export function useScriptPlayback() {
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
 
-  // Subscribe to store values without causing re-renders in the animation loop
   const store = useClassroomStore;
-  const isPaused = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState().isPaused,
-  );
-  const activeInteraction = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState().activeInteraction,
-  );
-  const playbackSpeed = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState().playbackSpeed,
-  );
-  const elapsedMs = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState().elapsedMs,
-  );
-  const scriptNodes = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState().scriptNodes,
-  );
-  const scriptPosition = useSyncExternalStore(
-    store.subscribe,
-    () => store.getState().scriptPosition,
-  );
+  const isPaused = useSyncExternalStore(store.subscribe, () => store.getState().isPaused);
+  const interaction = useSyncExternalStore(store.subscribe, () => store.getState().interaction);
+  const playbackSpeed = useSyncExternalStore(store.subscribe, () => store.getState().playbackSpeed);
+  const elapsedMs = useSyncExternalStore(store.subscribe, () => store.getState().elapsedMs);
 
-  // Main playback loop — reads from store directly, does NOT cause re-renders
+  // Main playback loop
   useEffect(() => {
-    if (isPaused || activeInteraction) {
+    const blocked = isPaused || (interaction && interaction.mode !== 'idle' && interaction.mode !== 'script-playing');
+    if (blocked) {
       cancelAnimationFrame(rafRef.current);
+      lastTimeRef.current = 0;
       return;
     }
 
-    lastTimeRef.current = performance.now();
-
     const tick = (now: number) => {
-      const state = store.getState();
-      const delta = (now - lastTimeRef.current) * state.playbackSpeed;
-      lastTimeRef.current = now;
-      const newElapsed = state.elapsedMs + delta;
-
-      // Process script nodes
-      let pos = state.scriptPosition;
-      let needsUpdate = false;
-
-      while (pos < state.scriptNodes.length && state.scriptNodes[pos].timestamp <= newElapsed) {
-        const node = state.scriptNodes[pos];
-
-        if (node.type === 'teacherPrompt') {
-          store.setState({ elapsedMs: newElapsed, scriptPosition: pos, isPaused: true });
-          state.reconcileScriptState(newElapsed);
-          return;
-        }
-
-        if (node.type === 'phaseTransition') {
-          state.setLessonPhase(node.phase);
-        }
-
-        pos++;
-        needsUpdate = true;
-      }
-
-      if (needsUpdate) {
-        store.setState({ scriptPosition: pos });
-        state.reconcileScriptState(newElapsed);
-      }
-
-      store.setState({ elapsedMs: newElapsed });
-
-      if (pos >= state.scriptNodes.length) {
-        store.setState({ isPaused: true });
+      if (lastTimeRef.current === 0) {
+        lastTimeRef.current = now;
+        rafRef.current = requestAnimationFrame(tick);
         return;
+      }
+
+      const delta = (now - lastTimeRef.current) * store.getState().playbackSpeed;
+      lastTimeRef.current = now;
+
+      const state = store.getState();
+      const newElapsed = state.elapsedMs + delta;
+      const totalDuration = selectTotalDuration(state);
+
+      if (newElapsed >= totalDuration) {
+        store.setState({ elapsedMs: totalDuration, isPaused: true });
+        return;
+      }
+
+      // Advance script position
+      let pos = state.scriptPosition;
+      const nodes = state.scriptNodes;
+      while (pos < nodes.length && nodes[pos].timestamp <= newElapsed) {
+        pos++;
+      }
+
+      const posChanged = pos !== state.scriptPosition;
+      store.setState({ elapsedMs: newElapsed, scriptPosition: pos });
+      if (posChanged) {
+        const justPassed = nodes[pos - 1];
+        if (justPassed && justPassed.type === 'teacherPrompt') {
+          store.setState({
+            interaction: {
+              mode: 'teacher-prompt',
+              actionType: justPassed.action,
+              prompt: justPassed.prompt,
+              targetStudentId: justPassed.targetStudentId ?? null,
+              candidateStudentIds: [],
+              feedbackText: null,
+              startedAt: Date.now(),
+              resolvedAt: null,
+              canContinue: false,
+              source: 'script',
+            },
+          });
+        }
+        state.reconcileScriptState(newElapsed);
       }
 
       rafRef.current = requestAnimationFrame(tick);
     };
 
     rafRef.current = requestAnimationFrame(tick);
-
     return () => cancelAnimationFrame(rafRef.current);
-  }, [isPaused, activeInteraction]); // Only depend on pause/interaction state
+  }, [isPaused, interaction?.mode]);
 
   const play = useCallback(() => {
-    const state = store.getState();
-    if (!state.activeInteraction) {
-      store.setState({ isPaused: false });
-    }
+    store.setState({ isPaused: false });
+    lastTimeRef.current = 0;
   }, []);
 
   const pause = useCallback(() => {
@@ -100,77 +88,65 @@ export function useScriptPlayback() {
   }, []);
 
   const togglePlayPause = useCallback(() => {
-    const state = store.getState();
-    if (state.isPaused) {
-      if (!state.activeInteraction) {
-        store.setState({ isPaused: false });
-      }
+    const s = store.getState();
+    if (s.isPaused) {
+      store.setState({ isPaused: false });
+      lastTimeRef.current = 0;
     } else {
       store.setState({ isPaused: true });
     }
   }, []);
 
-  // Fast-forward: find next teacherPrompt after current position
   const fastForward = useCallback(() => {
-    const state = store.getState();
-    const { scriptNodes: nodes, scriptPosition: pos } = state;
-
-    for (let i = pos; i < nodes.length; i++) {
-      if (nodes[i].type === 'teacherPrompt') {
-        const targetTimestamp = nodes[i].timestamp;
-        store.setState({ elapsedMs: targetTimestamp, scriptPosition: i, isPaused: true });
-        state.reconcileScriptState(targetTimestamp);
+    const s = store.getState();
+    const nodes = s.scriptNodes;
+    const elapsed = s.elapsedMs;
+    for (let i = s.scriptPosition; i < nodes.length; i++) {
+      if (nodes[i].type === 'teacherPrompt' && nodes[i].timestamp > elapsed) {
+        store.setState({ elapsedMs: nodes[i].timestamp, scriptPosition: i });
+        s.reconcileScriptState(nodes[i].timestamp);
         return;
       }
-    }
-
-    // No more teacher prompts — jump to end
-    if (nodes.length > 0) {
-      const lastNode = nodes[nodes.length - 1];
-      store.setState({ elapsedMs: lastNode.timestamp, scriptPosition: nodes.length, isPaused: true });
-      state.reconcileScriptState(lastNode.timestamp);
     }
   }, []);
 
   const seekTo = useCallback((fraction: number) => {
-    const state = store.getState();
-    const { scriptNodes: nodes } = state;
-    if (nodes.length === 0) return;
-
-    const maxTime = nodes[nodes.length - 1].timestamp;
-    const targetTime = maxTime * Math.max(0, Math.min(1, fraction));
+    const s = store.getState();
+    const total = selectTotalDuration(s);
+    const targetMs = fraction * total;
 
     let pos = 0;
-    for (let i = 0; i < nodes.length; i++) {
-      if (nodes[i].timestamp <= targetTime) {
-        pos = i + 1;
-      } else {
-        break;
-      }
+    const nodes = s.scriptNodes;
+    while (pos < nodes.length && nodes[pos].timestamp <= targetMs) {
+      pos++;
     }
 
-    store.setState({ elapsedMs: targetTime, scriptPosition: pos });
-    state.reconcileScriptState(targetTime);
+    store.setState({ elapsedMs: targetMs, scriptPosition: pos, isPaused: true });
+    s.reconcileScriptState(targetMs);
   }, []);
 
-  const progress = scriptNodes.length > 0
-    ? scriptPosition / scriptNodes.length
-    : 0;
+  const skipToPhase = useCallback((phaseScriptNode: ScriptNode | undefined) => {
+    if (phaseScriptNode) {
+      const s = store.getState();
+      const total = selectTotalDuration(s);
+      seekTo(phaseScriptNode.timestamp / total);
+    }
+  }, [seekTo]);
 
-  const totalDuration = scriptNodes.length > 0
-    ? scriptNodes[scriptNodes.length - 1].timestamp
-    : 0;
+  const totalDuration = useSyncExternalStore(store.subscribe, () => selectTotalDuration(store.getState()));
+  const progress = totalDuration > 0 ? Math.min(1, elapsedMs / totalDuration) : 0;
 
   return {
+    elapsedMs,
+    totalDuration,
+    progress,
+    isPaused,
+    playbackSpeed,
     play,
     pause,
     togglePlayPause,
     fastForward,
     seekTo,
-    progress,
-    totalDuration,
-    isPaused,
-    elapsedMs,
-    playbackSpeed,
+    skipToPhase,
   };
 }

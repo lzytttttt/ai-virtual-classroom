@@ -1,17 +1,63 @@
+/* ── Design Tokens ─────────────────────────────────────── */
 :root {
-  --color-primary: #FF9F43;
-  --color-primary-light: #FFB976;
-  --color-secondary: #54A0FF;
-  --color-secondary-light: #7DB8FF;
-  --color-accent-coral: #FF6B6B;
-  --color-accent-green: #5CD859;
+  /* Brand */
+  --color-primary: #E8853D;
+  --color-primary-light: #F0A66A;
+  --color-primary-dark: #C96E28;
+  --color-secondary: #5B7FFF;
+  --color-secondary-light: #8DA4FF;
+  --color-accent-green: #4CAF7D;
+  --color-accent-coral: #E8645A;
+  --color-accent-amber: #F5A623;
+  --color-accent-purple: #9B6DD7;
+
+  /* Surfaces */
+  --color-bg: #F7F4EF;
+  --color-bg-warm: #F0EBE1;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #FAFAF8;
+  --color-surface-active: #F5F3EE;
   --color-cream: #F8F1E4;
-  --color-dark: #3D3D3D;
+
+  /* Text */
+  --color-text: #2D2D2D;
+  --color-dark: #2D2D2D;
   --color-white: #FFFFFF;
-  --font-main: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --color-text-secondary: #6B6B6B;
+  --color-text-muted: #9A9A9A;
+  --color-text-on-primary: #FFFFFF;
+
+  /* Semantic */
+  --color-success: #4CAF7D;
+  --color-warning: #F5A623;
+  --color-error: #E8645A;
+  --color-info: #5B7FFF;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.06);
+  --shadow-focus: 0 0 0 3px rgba(91,127,255,0.25);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Font */
+  --font-main: 'Noto Sans SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Sizing */
+  --header-h: 56px;
+  --dock-h: 52px;
+  --console-w: 340px;
+  --reflection-w: 280px;
 }
 
-* {
+/* ── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -22,38 +68,33 @@ html, body, #root {
   height: 100%;
   overflow: hidden;
   font-family: var(--font-main);
-  background-color: var(--color-cream);
-  color: var(--color-dark);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Smooth scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: var(--radius-full); }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+/* ── Focus & Selection ─────────────────────────────────── */
+::selection { background: var(--color-secondary-light); color: #fff; }
+:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+/* ── Utility ───────────────────────────────────────────── */
+button {
+  font-family: var(--font-main);
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-primary-light);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary);
-}
-
-/* Selection color */
-::selection {
-  background: var(--color-primary-light);
-  color: var(--color-white);
-}
-
-/* Focus-visible outline for accessibility */
-:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
-  border-radius: 4px;
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
