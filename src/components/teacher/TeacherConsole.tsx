@@ -81,9 +81,11 @@ export const TeacherConsole: React.FC = () => {
                   callOnStudent(id);
                 } else if (interaction.actionType === 'discipline') {
                   discipline(id);
+                } else if (interaction.actionType === 'group-discussion') {
+                  groupDiscussion();
                 }
               }}
-              actionLabel={interaction.actionType === 'discipline' ? '提醒' : '选择'}
+              actionLabel={interaction.actionType === 'discipline' ? '提醒' : interaction.actionType === 'group-discussion' ? '开始讨论' : '选择'}
             />
           </div>
 
