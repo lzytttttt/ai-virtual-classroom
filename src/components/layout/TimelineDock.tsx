@@ -48,8 +48,8 @@ export function TimelineDock() {
       <div className="timeline-dock__divider" />
 
       <button
-        className={`timeline-dock__speed-btn${playbackSpeed === 2 ? ' timeline-dock__speed-btn--active' : ''}`}
-        onClick={() => setPlaybackSpeed(playbackSpeed === 1 ? 2 : 1)}
+        className={`timeline-dock__speed-btn${playbackSpeed !== 1 ? ' timeline-dock__speed-btn--active' : ''}`}
+        onClick={() => setPlaybackSpeed(playbackSpeed === 0.5 ? 1 : playbackSpeed === 1 ? 2 : 0.5)}
         title="倍速切换 (T)"
       >
         {playbackSpeed}x

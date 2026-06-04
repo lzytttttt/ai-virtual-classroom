@@ -89,6 +89,8 @@ export interface ActivityLogEntry {
   targetStudentName: string;
   feedbackText: string;
   effect: string;
+  /** Full teacher-student dialogue for the report */
+  dialogueText?: string;
 }
 
 // ── Personality response data ────────────────────────────

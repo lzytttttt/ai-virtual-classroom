@@ -95,6 +95,7 @@ function generateDemoLog(students: StudentSlice[]): ActivityLogEntry[] {
       actionType: 'call-on', targetStudentId: find('小雪')?.id ?? null, targetStudentName: '小雪',
       feedbackText: '老师，我读过王勃的诗！"海内存知己，天涯若比邻"！',
       effect: '小雪主动发言，课堂氛围活跃',
+      dialogueText: '老师：请小雪回答\n小雪："老师，我读过王勃的诗！"海内存知己，天涯若比邻"！"',
     },
     // Phase 2: Teaching — academic exchange
     {
@@ -102,18 +103,21 @@ function generateDemoLog(students: StudentSlice[]): ActivityLogEntry[] {
       actionType: 'call-on', targetStudentId: find('小明')?.id ?? null, targetStudentName: '小明',
       feedbackText: '老师，这句话用了对仗的手法，"落霞"对"秋水"，"孤鹜"对"长天"，非常工整！',
       effect: '小明深入分析对仗手法，课堂理解加深',
+      dialogueText: '老师：请小明分析对仗手法\n小明："老师，这句话用了对仗的手法，"落霞"对"秋水"，"孤鹜"对"长天"，非常工整！"',
     },
     {
       id: 'demo-3', timestamp: Date.now(), elapsedMs: 67000,
       actionType: 'discipline', targetStudentId: find('小刚')?.id ?? null, targetStudentName: '小刚',
       feedbackText: '（小声）窗外有只猫……',
       effect: '小刚从走神恢复注意力',
+      dialogueText: '老师：请小刚认真听讲\n小刚："（小声）窗外有只猫……"',
     },
     {
       id: 'demo-4', timestamp: Date.now(), elapsedMs: 87000,
       actionType: 'call-on', targetStudentId: find('小丽')?.id ?? null, targetStudentName: '小丽',
       feedbackText: '老师，我觉得王勃真的很了不起，年纪轻轻就有这样的胸襟。',
       effect: '小丽积极回应，展现共情能力',
+      dialogueText: '老师：请小丽回答\n小丽："老师，我觉得王勃真的很了不起，年纪轻轻就有这样的胸襟。"',
     },
     // Phase 3: Interaction — core training
     {
@@ -121,30 +125,35 @@ function generateDemoLog(students: StudentSlice[]): ActivityLogEntry[] {
       actionType: 'call-on', targetStudentId: find('小明')?.id ?? null, targetStudentName: '小明',
       feedbackText: '文章通过描写滕王阁的壮丽景色，抒发了作者怀才不遇的愤懑，同时也表达了穷且益坚的志向。',
       effect: '小明给出全面深入的回答',
+      dialogueText: '老师：请小明回答\n小明："文章通过描写滕王阁的壮丽景色，抒发了作者怀才不遇的愤懑，同时也表达了穷且益坚的志向。"',
     },
     {
       id: 'demo-6', timestamp: Date.now(), elapsedMs: 107000,
       actionType: 'call-on', targetStudentId: find('小红')?.id ?? null, targetStudentName: '小红',
       feedbackText: '（小声）我……我喜欢"落霞与孤鹜齐飞"那句……因为画面很美……',
       effect: '小红在鼓励下完成回答',
+      dialogueText: '老师：请小红回答\n小红："（小声）我……我喜欢"落霞与孤鹜齐飞"那句……因为画面很美……"',
     },
     {
       id: 'demo-7', timestamp: Date.now(), elapsedMs: 120000,
       actionType: 'discipline', targetStudentId: find('小刚')?.id ?? null, targetStudentName: '小刚',
       feedbackText: '啊？老师！我在……我在思考人生！',
       effect: '小刚被提醒后恢复认真听讲',
+      dialogueText: '老师：请小刚认真听讲\n小刚："啊？老师！我在……我在思考人生！"',
     },
     {
       id: 'demo-8', timestamp: Date.now(), elapsedMs: 133000,
       actionType: 'group-discussion', targetStudentId: null, targetStudentName: '全班',
       feedbackText: '小组讨论：王勃在文章中表达了哪些情感？',
       effect: '全班分为3组进行讨论，课堂参与度提升',
+      dialogueText: '老师：小组讨论——王勃在文章中表达了哪些情感？\n小雪和小丽：讨论了文章的意境与写作手法\n小明和小强：分析了"穷且益坚"的精神内涵\n小红和小刚：交流了对落霞意象的感受',
     },
     {
       id: 'demo-9', timestamp: Date.now(), elapsedMs: 155000,
       actionType: 'ask-question', targetStudentId: find('小强')?.id ?? null, targetStudentName: '小强',
       feedbackText: '我觉得最重要的是那种不服输的精神！就算处境不好也要坚持！',
       effect: '全班提问，6人参与回答',
+      dialogueText: '老师：全班提问\n小强："我觉得最重要的是那种不服输的精神！就算处境不好也要坚持！"',
     },
     // Phase 4: Summary — wrap-up
     {
@@ -152,12 +161,14 @@ function generateDemoLog(students: StudentSlice[]): ActivityLogEntry[] {
       actionType: 'call-on', targetStudentId: find('小丽')?.id ?? null, targetStudentName: '小丽',
       feedbackText: '老师，我以后遇到困难也要像王勃一样坚强！',
       effect: '小丽表达感悟，情感共鸣',
+      dialogueText: '老师：请小丽分享感悟\n小丽："老师，我以后遇到困难也要像王勃一样坚强！"',
     },
     {
       id: 'demo-11', timestamp: Date.now(), elapsedMs: 201000,
       actionType: 'call-on', targetStudentId: find('小雪')?.id ?? null, targetStudentName: '小雪',
       feedbackText: '这篇文章真的太美了，我要把它背下来。',
       effect: '小雪被文章打动，主动背诵',
+      dialogueText: '老师：请小雪回答\n小雪："这篇文章真的太美了，我要把它背下来。"',
     },
   ];
 }

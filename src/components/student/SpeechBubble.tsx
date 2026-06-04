@@ -10,6 +10,54 @@ interface SpeechBubbleProps {
   offsetY?: number;
 }
 
+const FONT_SIZE = 12;
+const LINE_HEIGHT = 15;
+const PADDING_X = 10;
+const PADDING_Y = 8;
+const MAX_BUBBLE_WIDTH = 200;
+const MAX_LINES = 4;
+
+/** Pixel width of a single character at the current font size */
+function charWidth(ch: string): number {
+  // CJK / fullwidth ≈ 1.05em, Latin/digits ≈ 0.55em
+  return ch.charCodeAt(0) > 0x7F ? FONT_SIZE * 1.05 : FONT_SIZE * 0.55;
+}
+
+/** Pixel width of a string */
+function measureText(s: string): number {
+  let w = 0;
+  for (const ch of s) w += charWidth(ch);
+  return w;
+}
+
+/** Wrap text to fit within maxWidthPx, truncating with '…' if exceeding MAX_LINES */
+function wrapText(text: string, maxWidthPx: number): string[] {
+  const maxContentWidth = maxWidthPx - PADDING_X * 2;
+  const lines: string[] = [];
+  let current = '';
+
+  for (const ch of text) {
+    const test = current + ch;
+    if (measureText(test) > maxContentWidth && current) {
+      lines.push(current);
+      current = ch;
+      if (lines.length >= MAX_LINES) break;
+    } else {
+      current = test;
+    }
+  }
+  if (current && lines.length < MAX_LINES) lines.push(current);
+
+  // Truncate last line if we hit the limit mid-word
+  if (lines.length === MAX_LINES && current && !lines[MAX_LINES - 1].endsWith(current)) {
+    const last = lines[MAX_LINES - 1];
+    const truncated = last.slice(0, -2) + '…';
+    lines[MAX_LINES - 1] = truncated;
+  }
+
+  return lines.length > 0 ? lines : [text.slice(0, 8) + '…'];
+}
+
 export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   text,
   mode = 'individual',
@@ -48,17 +96,19 @@ export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   }
 
   // Individual speech bubble
-  const textLines = wrapText(text, 12);
-  const lineHeight = 14;
-  const padding = 10;
-  const bubbleHeight = textLines.length * lineHeight + padding * 2;
-  const bubbleWidth = Math.max(60, Math.max(...textLines.map(l => l.length)) * 9 + padding * 2);
+  const textLines = wrapText(text, MAX_BUBBLE_WIDTH);
+  const widestLine = Math.max(60, ...textLines.map(measureText));
+  const bubbleWidth = Math.min(MAX_BUBBLE_WIDTH, widestLine + PADDING_X * 2);
+  const bubbleHeight = textLines.length * LINE_HEIGHT + PADDING_Y * 2;
 
   return (
     <g
       className="speech-bubble"
       transform={`translate(${offsetX}, ${offsetY})`}
     >
+      {/* Full text for hover */}
+      <title>{text}</title>
+
       {/* Bubble body */}
       <rect
         x={-bubbleWidth / 2} y={-bubbleHeight}
@@ -70,7 +120,7 @@ export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
       />
       {/* Tail (pointing down) */}
       <polygon
-        points={`-6,${-2} 6,${-2} 0,10`}
+        points="-6,{-2} 6,{-2} 0,10"
         fill="#FFFFFF"
         stroke="#3D3D3D"
         strokeWidth="2"
@@ -87,11 +137,11 @@ export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
         <text
           key={i}
           x="0"
-          y={-bubbleHeight + padding + lineHeight * (i + 1) - 3}
+          y={-bubbleHeight + PADDING_Y + LINE_HEIGHT * (i + 1) - 3}
           textAnchor="middle"
           dominantBaseline="middle"
           fill="#3D3D3D"
-          fontSize="12"
+          fontSize={FONT_SIZE}
           fontFamily="'Comic Sans MS', 'Chalkboard SE', cursive"
         >
           {line}
@@ -100,18 +150,5 @@ export const SpeechBubble: React.FC<SpeechBubbleProps> = ({
     </g>
   );
 };
-
-/** Simple text wrapping for CJK and Latin characters */
-function wrapText(text: string, maxChars: number): string[] {
-  if (text.length <= maxChars) return [text];
-  const lines: string[] = [];
-  let remaining = text;
-  while (remaining.length > maxChars) {
-    lines.push(remaining.slice(0, maxChars));
-    remaining = remaining.slice(maxChars);
-  }
-  if (remaining) lines.push(remaining);
-  return lines;
-}
 
 export default SpeechBubble;

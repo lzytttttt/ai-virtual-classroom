@@ -424,6 +424,45 @@
   color: var(--color-accent-green);
 }
 
+.report-timeline__header {
+  display: inline;
+}
+
+.report-timeline__toggle {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  margin-left: 4px;
+}
+
+.report-timeline__dialogue {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-timeline__dialogue-line {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.report-timeline__dialogue-line--teacher {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.report-timeline__dialogue-line--student {
+  color: var(--color-text);
+  padding-left: 12px;
+}
+
 /* ── Summary ───────────────────────────────────────────── */
 .report-summary-text {
   font-size: 14px;

@@ -23,7 +23,7 @@ export function useKeyboardShortcuts() {
 
         case 'KeyT':
           e.preventDefault();
-          setPlaybackSpeed(playbackSpeed === 1 ? 2 : 1);
+          setPlaybackSpeed(playbackSpeed === 0.5 ? 1 : playbackSpeed === 1 ? 2 : 0.5);
           break;
 
         case 'Digit5':

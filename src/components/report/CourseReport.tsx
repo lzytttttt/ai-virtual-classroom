@@ -337,25 +337,54 @@ const StudentDetailCard: React.FC<{ report: StudentReport; rank: number }> = ({ 
 };
 
 // ── Activity Timeline ────────────────────────────────────
-const ActivityTimeline: React.FC<{ log: ReportData['activityLog'] }> = ({ log }) => (
-  <div className="report-timeline">
-    {log.map((entry, idx) => (
-      <div key={entry.id} className="report-timeline__entry" style={{ animationDelay: `${idx * 0.05}s` }}>
-        <div className="report-timeline__time">{fmtTime(entry.elapsedMs)}</div>
-        <div className="report-timeline__dot" style={{
-          background: entry.actionType === 'discipline' ? 'var(--color-error)' :
-                      entry.actionType === 'group-discussion' ? 'var(--color-accent-green)' :
-                      'var(--color-secondary)',
-        }} />
-        <div className="report-timeline__content">
-          <span className="report-timeline__icon">{ACTION_ICONS[entry.actionType] ?? '📋'}</span>
-          <span className="report-timeline__action">{entry.targetStudentName}</span>
-          {entry.effect && <span className="report-timeline__effect"> — {entry.effect}</span>}
-        </div>
-      </div>
-    ))}
-  </div>
-);
+const ActivityTimeline: React.FC<{ log: ReportData['activityLog'] }> = ({ log }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  return (
+    <div className="report-timeline">
+      {log.map((entry, idx) => {
+        const hasDialogue = !!entry.dialogueText;
+        const isExpanded = expandedId === entry.id;
+        const dialogueLines = entry.dialogueText?.split('\n') ?? [];
+
+        return (
+          <div key={entry.id} className="report-timeline__entry" style={{ animationDelay: `${idx * 0.05}s` }}>
+            <div className="report-timeline__time">{fmtTime(entry.elapsedMs)}</div>
+            <div className="report-timeline__dot" style={{
+              background: entry.actionType === 'discipline' ? 'var(--color-error)' :
+                          entry.actionType === 'group-discussion' ? 'var(--color-accent-green)' :
+                          'var(--color-secondary)',
+            }} />
+            <div className="report-timeline__content">
+              <div
+                className="report-timeline__header"
+                onClick={() => hasDialogue && setExpandedId(isExpanded ? null : entry.id)}
+                style={{ cursor: hasDialogue ? 'pointer' : 'default' }}
+              >
+                <span className="report-timeline__icon">{ACTION_ICONS[entry.actionType] ?? '📋'}</span>
+                <span className="report-timeline__action">{entry.targetStudentName}</span>
+                {entry.effect && <span className="report-timeline__effect"> — {entry.effect}</span>}
+                {hasDialogue && <span className="report-timeline__toggle">{isExpanded ? ' ▲' : ' ▼'}</span>}
+              </div>
+              {hasDialogue && isExpanded && (
+                <div className="report-timeline__dialogue">
+                  {dialogueLines.map((line, i) => {
+                    const isTeacher = line.startsWith('老师');
+                    return (
+                      <div key={i} className={`report-timeline__dialogue-line ${isTeacher ? 'report-timeline__dialogue-line--teacher' : 'report-timeline__dialogue-line--student'}`}>
+                        {line}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 // ── Main Report ──────────────────────────────────────────
 interface CourseReportProps {

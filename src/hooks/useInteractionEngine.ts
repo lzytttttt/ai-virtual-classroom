@@ -80,6 +80,7 @@ export function useInteractionEngine() {
       targetStudentName: student.name,
       feedbackText: response,
       effect: `${student.name}给出回答，课堂参与度提升`,
+      dialogueText: `老师：请${student.name}回答\n${student.name}："${response}"`,
     });
   }, []);
 
@@ -101,7 +102,6 @@ export function useInteractionEngine() {
       candidateStudentIds: raiserIds,
       source: 'teacher',
     });
-
     s.addActivityLog({
       id: `log-${Date.now()}`,
       timestamp: Date.now(),
@@ -111,6 +111,7 @@ export function useInteractionEngine() {
       targetStudentName: '全班',
       feedbackText: '提出全班问题',
       effect: `${raisers.length}名学生举手`,
+      dialogueText: `老师：全班提问\n（${raisers.map(r => r.name).join('、')}举手回答）`,
     });
   }, []);
 
@@ -135,7 +136,6 @@ export function useInteractionEngine() {
       `提醒${target.name}（${prevState}→认真听讲）\n${target.name}："${response}"`,
       true,
     );
-
     s.addActivityLog({
       id: `log-${Date.now()}`,
       timestamp: Date.now(),
@@ -145,6 +145,7 @@ export function useInteractionEngine() {
       targetStudentName: target.name,
       feedbackText: response,
       effect: `${target.name}从${prevState}恢复为认真听讲`,
+      dialogueText: `老师：请${target.name}认真听讲\n${target.name}："${response}"`,
     });
   }, []);
 
@@ -169,7 +170,6 @@ export function useInteractionEngine() {
       `小组讨论开始（3组）\n\n${summaries.join('\n')}`,
       true,
     );
-
     s.addActivityLog({
       id: `log-${Date.now()}`,
       timestamp: Date.now(),
@@ -179,6 +179,7 @@ export function useInteractionEngine() {
       targetStudentName: '全班',
       feedbackText: '小组讨论',
       effect: '全班分为3组进行讨论，课堂参与度提升',
+      dialogueText: `老师：小组讨论\n${summaries.join('\n')}`,
     });
   }, []);
 
@@ -216,6 +217,7 @@ export function useInteractionEngine() {
       targetStudentName: student.name,
       feedbackText: '表扬',
       effect: `${student.name}受到表扬，全班积极性提升`,
+      dialogueText: `老师：${student.name}回答得很好！\n${student.name}：（露出开心的笑容）`,
     });
   }, []);
 
@@ -238,7 +240,6 @@ export function useInteractionEngine() {
       `追问${student.name}：\n${student.name}："${followUp[student.personality]}"`,
       true,
     );
-
     s.addActivityLog({
       id: `log-${Date.now()}`,
       timestamp: Date.now(),
@@ -248,6 +249,7 @@ export function useInteractionEngine() {
       targetStudentName: student.name,
       feedbackText: '追问',
       effect: `${student.name}深入回答，思维拓展`,
+      dialogueText: `老师追问${student.name}：${followUp[student.personality].split('——')[0]}\n${student.name}："${followUp[student.personality].split('——')[1]}"`,
     });
   }, []);
 
