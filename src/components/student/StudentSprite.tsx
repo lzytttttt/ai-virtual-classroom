@@ -5,12 +5,12 @@ import { SpeechBubble, type BubbleMode } from './SpeechBubble';
 import { StudentStatusBadge } from './StudentStatusBadge';
 
 const PERSONALITY_SVG_MAP: Record<string, string> = {
-  '学霸': '/svg/student-base-学霸.svg',
-  '内向': '/svg/student-base-内向.svg',
-  '调皮': '/svg/student-base-调皮.svg',
-  '努力': '/svg/student-base-努力.svg',
-  '文艺': '/svg/student-base-文艺.svg',
-  '体育': '/svg/student-base-体育.svg',
+  '学霸': `${import.meta.env.BASE_URL}svg/student-base-学霸.svg`,
+  '内向': `${import.meta.env.BASE_URL}svg/student-base-内向.svg`,
+  '调皮': `${import.meta.env.BASE_URL}svg/student-base-调皮.svg`,
+  '努力': `${import.meta.env.BASE_URL}svg/student-base-努力.svg`,
+  '文艺': `${import.meta.env.BASE_URL}svg/student-base-文艺.svg`,
+  '体育': `${import.meta.env.BASE_URL}svg/student-base-体育.svg`,
 };
 
 /** Desk positions matching ClassroomScene layout */
