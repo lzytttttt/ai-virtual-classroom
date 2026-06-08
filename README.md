@@ -87,25 +87,25 @@
 
 ```mermaid
 flowchart LR
-    subgraph ① 导入
-        A["介绍王勃与滕王阁<br/><i>~30s</i>"]
+    subgraph S1["导入"]
+        A["介绍王勃与滕王阁"]
     end
-    subgraph ② 讲解
-        B["分析名句<br/>"落霞与孤鹜齐飞"<br/><i>~60s</i>"]
+    subgraph S2["讲解"]
+        B["分析名句 - 落霞与孤鹜齐飞"]
     end
-    subgraph ③ 互动
-        C["点名 · 提问 · 纪律管理<br/>小组讨论 · 全班齐读<br/><i>~90s</i>"]
+    subgraph S3["互动"]
+        C["点名 / 提问 / 纪律管理<br/>小组讨论 / 全班齐读"]
     end
-    subgraph ④ 总结
-        D["回顾要点<br/>学生表达感悟<br/><i>~30s</i>"]
+    subgraph S4["总结"]
+        D["回顾要点 / 学生表达感悟"]
     end
 
     A --> B --> C --> D
 
-    style A fill:#E8F5E9,stroke:#4CAF50,color:#1B5E20
-    style B fill:#E3F2FD,stroke:#2196F3,color:#0D47A1
-    style C fill:#FFF3E0,stroke:#FF9800,color:#E65100
-    style D fill:#F3E5F5,stroke:#9C27B0,color:#4A148C
+    style S1 fill:#E8F5E9,stroke:#4CAF50,color:#1B5E20
+    style S2 fill:#E3F2FD,stroke:#2196F3,color:#0D47A1
+    style S3 fill:#FFF3E0,stroke:#FF9800,color:#E65100
+    style S4 fill:#F3E5F5,stroke:#9C27B0,color:#4A148C
 ```
 
 ### 各阶段详情
@@ -148,11 +148,11 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    START["教师控制台"] --> A["📢 点名回答"]
-    START --> B["❓ 全班提问"]
-    START --> C["⚠️ 纪律管理"]
-    START --> D["💬 小组讨论"]
-    START --> E["📖 全班齐读"]
+    START["教师控制台"] --> A["点名回答"]
+    START --> B["全班提问"]
+    START --> C["纪律管理"]
+    START --> D["小组讨论"]
+    START --> E["全班齐读"]
 
     A --> A1["选择目标学生"]
     A1 --> A2["学生个性化回答"]
@@ -161,7 +161,7 @@ flowchart TD
     B1 --> B2["教师选择回答者"]
 
     C --> C1["针对走神/睡觉学生"]
-    C1 --> C2["学生回复 & 恢复状态"]
+    C1 --> C2["学生回复并恢复状态"]
 
     D --> D1["学生两两对话"]
     D1 --> D2["讨论结束继续教学"]
@@ -217,7 +217,7 @@ flowchart TD
 
 ```mermaid
 graph TB
-    subgraph UI["🖥️ UI 层"]
+    subgraph UI["UI 层"]
         App["App.tsx"]
         HC["HeaderBar"]
         CC["ClassroomCanvas"]
@@ -226,24 +226,24 @@ graph TB
         CR["CourseReport"]
     end
 
-    subgraph Components["🧩 组件层"]
-        CS["ClassroomScene<br/>(黑板·课桌·讲台·窗户)"]
-        SS["StudentSprite<br/>(角色·状态叠加·气泡)"]
-        SO["StateOverlay<br/>(举手·走神·睡觉动画)"]
-        SB["SpeechBubble<br/>(对话·旁白气泡)"]
-        SE["ScriptEngine<br/>(脚本驱动引擎)"]
+    subgraph Components["组件层"]
+        CS["ClassroomScene"]
+        SS["StudentSprite"]
+        SO["StateOverlay"]
+        SB["SpeechBubble"]
+        SE["ScriptEngine"]
     end
 
-    subgraph State["📦 状态层"]
+    subgraph State["状态层"]
         ZS["Zustand Store"]
         SEL["Selectors"]
-        IE["InteractionEngine<br/>(状态机)"]
+        IE["InteractionEngine"]
     end
 
-    subgraph Data["💾 数据层"]
-        LS["lessonScript.ts<br/>(课程脚本)"]
-        SD["students.ts<br/>(学生数据)"]
-        TP["types.ts<br/>(类型定义)"]
+    subgraph Data["数据层"]
+        LS["lessonScript.ts"]
+        SD["students.ts"]
+        TP["types.ts"]
     end
 
     App --> HC & CC & TC & TD & CR
